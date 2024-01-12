@@ -5,7 +5,8 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
+	"gorm.io/driver/postgres"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
@@ -25,21 +26,43 @@ var DB *gorm.DB
 
 func main() {
 	godotenv.Load()
-	var err error
-	DB, err = gorm.Open("postgres", os.Getenv("DATABASE_URL"))
-	if err != nil {
-		log.Fatalf("failed to connect database: %v", err)
-	}
-	defer DB.Close()
+    var err error
+    dsn := os.Getenv("DATABASE_URL")
+    DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+    if err != nil {
+        log.Fatalf("failed to connect database: %v", err)
+    }
 
-	DB.AutoMigrate(&User{})
+    sqlDB, err := DB.DB()
+    if err != nil {
+        log.Fatalf("failed to get database: %v", err)
+    }
+    defer sqlDB.Close()
 
-	r := gin.Default()
+    DB.AutoMigrate(&User{})
 
-	r.POST("/register", register)
-	r.POST("/login", login)
+    r := gin.Default()
 
-	r.Run()
+    r.POST("/register", register)
+    r.POST("/login", login)
+
+    r.Run()
+	// godotenv.Load()
+	// var err error
+	// DB, err = gorm.Open("postgres", os.Getenv("DATABASE_URL"))
+	// if err != nil {
+	// 	log.Fatalf("failed to connect database: %v", err)
+	// }
+	// defer DB.Close()
+
+	// DB.AutoMigrate(&User{})
+
+	// r := gin.Default()
+
+	// r.POST("/register", register)
+	// r.POST("/login", login)
+
+	// r.Run()
 }
 
 func register(c *gin.Context) {
