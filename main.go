@@ -47,22 +47,6 @@ func main() {
     r.POST("/login", login)
 
     r.Run()
-	// godotenv.Load()
-	// var err error
-	// DB, err = gorm.Open("postgres", os.Getenv("DATABASE_URL"))
-	// if err != nil {
-	// 	log.Fatalf("failed to connect database: %v", err)
-	// }
-	// defer DB.Close()
-
-	// DB.AutoMigrate(&User{})
-
-	// r := gin.Default()
-
-	// r.POST("/register", register)
-	// r.POST("/login", login)
-
-	// r.Run()
 }
 
 func register(c *gin.Context) {
